@@ -71,7 +71,7 @@ class TestAnimated extends  Component{
             {
                 toValue:1,
                 duration:800,
-                easing:Easing.linear,
+                easing:Easing.elastic(),
             }
         ).start();
     }
@@ -104,7 +104,7 @@ class AwesomeProject extends React.Component {
             <TouchableOpacity key={i}  onPress={()=>ToastAndroid.show('按到我啦~第'+i+'天',ToastAndroid.SHORT)}
                               onLongPress={()=>ToastAndroid.show('按痛我了~第'+i+'天',ToastAndroid.SHORT)}>
                <View style={styles.row}>
-                   <Text>第{i}天</Text>
+                   <Text>第{i}天啦666</Text>
                </View>
 
             </TouchableOpacity>
