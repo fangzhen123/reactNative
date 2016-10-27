@@ -42,7 +42,7 @@ class TestAnimated extends  Component{
                         {scale:this.state.bounceValue},
                         {rotateZ: this.state.rotateValue.interpolate({
                                 inputRange: [0,1],
-                                outputRange: ['180deg', '360deg']})
+                                outputRange: ['0deg', '360deg']})
                         }
                     ]
                 }}
@@ -104,7 +104,7 @@ class AwesomeProject extends React.Component {
             <TouchableOpacity key={i}  onPress={()=>ToastAndroid.show('按到我啦~第'+i+'天',ToastAndroid.SHORT)}
                               onLongPress={()=>ToastAndroid.show('按痛我了~第'+i+'天',ToastAndroid.SHORT)}>
                <View style={styles.row}>
-                   <Text>第{i}天s</Text>
+                   <Text>第{i}天</Text>
                </View>
 
             </TouchableOpacity>
