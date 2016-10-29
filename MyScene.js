@@ -6,22 +6,59 @@ import React,{ Component} from 'react';
 import {
     View,
     Text,
-    TouchableHighlight,
     Navigator,
     StyleSheet,
     Image,
     ListView,
+    TextInput,
+    TouchableOpacity,
 } from 'react-native';
 
-var REQUEST_URL = 'https://api.douban.com/v2/music/search?q=%E8%AE%B8%E5%B5%A9&count=100';
+// var REQUEST_URL = 'https://api.douban.com/v2/music/search?q=%E8%AE%B8%E5%B5%A9&count=100';
+var REQUEST_URL = 'https://api.douban.com/v2/music/search?count=100&q=';
 
-class MusicTitle extends Component{
+//搜索按钮组件
+class SearchComponent extends Component{
+
+    constructor(props){
+        super(props);
+        this.state = {
+            inputContent:'',
+        }
+    }
+
     render(){
         return (
-            <Text>我的音乐</Text>
+            <View style={{flexDirection:'row'}}>
+
+                <View style={{flex:4}}>
+                    <TextInput onChangeText={(text)=>{this.setState({inputContent:text})}}
+                        placeholder="关键词查找"
+                               autoCapitalize='none'
+                               autoCorrect={false}
+                               style={{textAlign:'center'}}
+
+                    ></TextInput>
+                </View>
+
+
+                <View style={{flex:1,alignItems:'center'}}>
+                    <TouchableOpacity
+                        onPress={
+                            ()=>{
+                                this.props.fetchData(this.state.inputContent);
+                        }}
+                        style={mySceneStyle.searchBtn}
+                    >
+                        <Text>搜索</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         );
     }
 }
+
+
 
 
 export default class MyScene extends Component{
@@ -34,16 +71,18 @@ export default class MyScene extends Component{
             }),
             loaded:false,
         };
-        this.fetchData = this.fetchData.bind(this);
+
+       this.fetchData = this.fetchData.bind(this);
     }
 
     componentDidMount() {
-        this.fetchData();
+        this.fetchData('许嵩');
     }
 
 
-    fetchData() {
-        fetch(REQUEST_URL)
+    fetchData(keyword) {
+        var url = REQUEST_URL+keyword;
+        fetch(url)
             .then((response) => response.json())
             .then((responseData) => {
                 // 注意，这里使用了this关键字，为了保证this在调用时仍然指向当前组件，我们需要对其进行“绑定”操作
@@ -67,18 +106,29 @@ export default class MyScene extends Component{
 
         return (
             <View style={{flex:1}}>
-                <View style={{flexDirection:'row',alignItems:'center',backgroundColor:'#008ca6'}}>
-                    <View style={{left:0}}>
-                        <TouchableHighlight onPress={()=>{this.props.navigator.jumpBack()}}>
+
+                <View style={{flexDirection:'row',height:56,alignItems:'center',backgroundColor:'#008ca6'}}>
+
+                    <View style={{flex:1}}>
+                        <TouchableOpacity onPress={()=>{this.props.navigator.jumpBack()}}>
                             <View>
                                 <Image style={mySceneStyle.backButton} source={require('./images/back.png')} />
                             </View>
-                        </TouchableHighlight>
+                        </TouchableOpacity>
                     </View>
-                    <View>
+
+
+                    <View style={{flex:3}}>
                         <Text style={mySceneStyle.pageTitle}>{this.props.title}</Text>
                     </View>
+
+
                 </View>
+
+                <View>
+                    <SearchComponent fetchData={this.fetchData}/>
+                </View>
+
 
                 <View style={{flex:1}}>
                     <ListView
@@ -122,7 +172,8 @@ export default class MyScene extends Component{
 const mySceneStyle = StyleSheet.create({
     pageTitle:{
         fontSize:25,
-        textAlign:'center',
+        marginLeft:50,
+        color:'#fff',
     },
     container: {
         flex: 1,
@@ -158,4 +209,16 @@ const mySceneStyle = StyleSheet.create({
         marginLeft: 16,
         tintColor: 'white',
     },
+    searchBtn:{
+        backgroundColor: '#9DE2A1',
+        padding: 15,
+        borderWidth: StyleSheet.hairlineWidth,
+        margin:5,
+        borderRadius:5
+    },
+    searchImage:{
+        width:30,
+        height:30,
+        borderWidth:1,
+    }
 });
