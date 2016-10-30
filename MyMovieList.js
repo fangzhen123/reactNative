@@ -12,10 +12,12 @@ import {
     ListView,
     TextInput,
     TouchableOpacity,
+    WebView,
+    ToastAndroid,
 } from 'react-native';
 
-// var REQUEST_URL = 'https://api.douban.com/v2/music/search?q=%E8%AE%B8%E5%B5%A9&count=100';
-var REQUEST_URL = 'https://api.douban.com/v2/music/search?count=100&q=';
+var REQUEST_URL_SEARCH = 'http://api.douban.com/v2/movie/search?q=';
+
 
 //搜索按钮组件
 class SearchComponent extends Component{
@@ -46,9 +48,9 @@ class SearchComponent extends Component{
                     <TouchableOpacity
                         onPress={
                             ()=>{
-                                this.props.fetchData(this.state.inputContent);
+                                this.props.setKeyWord(this.state.inputContent);
                         }}
-                        style={mySceneStyle.searchBtn}
+                        style={MySceneStyle.searchBtn}
                     >
                         <Text>搜索</Text>
                     </TouchableOpacity>
@@ -61,7 +63,7 @@ class SearchComponent extends Component{
 
 
 
-export default class MyScene extends Component{
+export default class MyMovieList extends Component{
     constructor(props){
         super(props);
         this.state = {
@@ -70,31 +72,80 @@ export default class MyScene extends Component{
                 rowHasChanged:(a,b)=>a!==b,
             }),
             loaded:false,
+            pageSize:10,
+            page:1,
+            start:0,
+            data:[],
+            keyword:'周星驰'
         };
-
-       this.fetchData = this.fetchData.bind(this);
+        this.fetchData = this.fetchData.bind(this);
+        this.renderMovies = this.renderMovies.bind(this);
+        this.setKeyWord = this.setKeyWord.bind(this);
     }
+
 
     componentDidMount() {
-        this.fetchData('许嵩');
+        this.fetchData(REQUEST_URL_SEARCH+this.state.keyword);
     }
 
 
-    fetchData(keyword) {
-        var url = REQUEST_URL+keyword;
+    /**
+     * 搜索时设置关键词
+     * @param keyword
+     */
+    setKeyWord(keyword){
+        this.setState({
+            keyword:keyword,
+            page:1,
+            start:0,
+            data:[],
+        },function () {
+            this.fetchData(REQUEST_URL_SEARCH+keyword);
+        });
+    }
+
+    fetchData(url) {
+        url += '&count=10&start='+this.state.start;
+        console.log(url);
         fetch(url)
             .then((response) => response.json())
             .then((responseData) => {
                 // 注意，这里使用了this关键字，为了保证this在调用时仍然指向当前组件，我们需要对其进行“绑定”操作
+                let newData = this.state.data.concat(responseData.subjects);
                 this.setState({
-                    dataSource: this.state.dataSource.cloneWithRows(responseData.musics),
+                    dataSource: this.state.dataSource.cloneWithRows(newData),
                     loaded: true,
+                    data:newData,
                 });
             });
     }
 
+    renderMovies(movies) {
+        return (
+            <View style={MySceneStyle.container}>
+                <Image
+                    source={{uri: movies.images.large}}
+                    style={MySceneStyle.thumbnail}
+                />
+                <View style={MySceneStyle.rightContainer}>
+                    <Text style={MySceneStyle.title}>电影:   {movies.title}</Text>
+                    <Text style={MySceneStyle.title}>评分:   {movies.rating.average}</Text>
+                    <Text style={MySceneStyle.title}>时间:   {movies.year}</Text>
+                    <Text style={MySceneStyle.title}>类型:   <Text style={{color:'#00D0CF'}}>{movies.genres.join(' / ')}</Text></Text>
+                    <TouchableOpacity onPress={()=>{
+                        this.state.navigator.push({name:'movieInfo',url:'https://movie.douban.com/subject/'+movies.id+'/mobile',sceneConfig:Navigator.SceneConfigs.FadeAndroid});
+                    }}>
+                        <View style={MySceneStyle.viewInfo}>
+                            <Text style={MySceneStyle.viewText}>查看详情</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
+
     static defaultProps = {
-        title:'我的音乐',
+        title:'我的电影',
     }
 
 
@@ -112,29 +163,38 @@ export default class MyScene extends Component{
                     <View style={{flex:1}}>
                         <TouchableOpacity onPress={()=>{this.props.navigator.jumpBack()}}>
                             <View>
-                                <Image style={mySceneStyle.backButton} source={require('./images/back.png')} />
+                                <Image style={MySceneStyle.backButton} source={require('./images/back.png')} />
                             </View>
                         </TouchableOpacity>
                     </View>
 
 
                     <View style={{flex:3}}>
-                        <Text style={mySceneStyle.pageTitle}>{this.props.title}</Text>
+                        <Text style={MySceneStyle.pageTitle}>{this.props.title}</Text>
                     </View>
 
 
                 </View>
 
                 <View>
-                    <SearchComponent fetchData={this.fetchData}/>
+                    <SearchComponent setKeyWord={this.setKeyWord}/>
                 </View>
 
 
                 <View style={{flex:1}}>
                     <ListView
                         dataSource={this.state.dataSource}
-                        renderRow={this.renderMusic}
-                        style={mySceneStyle.listView}
+                        renderRow={this.renderMovies}
+                        style={MySceneStyle.listView}
+                        onEndReached={()=>{
+                            let page = this.state.page+1;
+                            this.setState({
+                                page:page,
+                                start:this.state.pageSize*(page-1),
+                            },function () {
+                                this.fetchData(REQUEST_URL_SEARCH+this.state.keyword);
+                            });
+                        }}
                     />
                 </View>
             </View>
@@ -144,32 +204,19 @@ export default class MyScene extends Component{
 
     renderLoadingView() {
         return (
-            <View style={mySceneStyle.container}>
+            <View style={MySceneStyle.container_loading}>
                 <Text>
-                    音乐加载中...
+                    电影加载中...
                 </Text>
             </View>
         );
     }
 
-    renderMusic(music) {
-        return (
-            <View style={mySceneStyle.container}>
-                <Image
-                    source={{uri: music.image}}
-                    style={mySceneStyle.thumbnail}
-                />
-                <View style={mySceneStyle.rightContainer}>
-                    <Text style={mySceneStyle.title}>歌名:   {music.title}</Text>
-                    <Text style={mySceneStyle.title}>评分:   {music.rating.average}</Text>
-                </View>
-            </View>
-        );
-    }
+
 }
 
 
-const mySceneStyle = StyleSheet.create({
+const MySceneStyle = StyleSheet.create({
     pageTitle:{
         fontSize:25,
         marginLeft:50,
@@ -179,11 +226,19 @@ const mySceneStyle = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
+        // alignItems: 'center',
+        backgroundColor: '#F5FCFF',
+    },
+    container_loading: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
     },
     rightContainer: {
         flex: 1,
+        // marginTop:20,
     },
     title: {
         fontSize: 15,
@@ -194,8 +249,8 @@ const mySceneStyle = StyleSheet.create({
         textAlign: 'center',
     },
     thumbnail: {
-        width: 70,
-        height:94,
+        width: 150,
+        height:210,
         margin:3,
         borderRadius:5,
     },
@@ -220,5 +275,18 @@ const mySceneStyle = StyleSheet.create({
         width:30,
         height:30,
         borderWidth:1,
+    },
+    viewInfo:{
+        width:150,
+        height:50,
+        backgroundColor:'#00D0CF',
+        alignItems:'center',
+        justifyContent:'center',
+        borderRadius:5,
+        marginLeft:10,
+    },
+    viewText:{
+        fontSize:15,
+        color:'#fff'
     }
 });

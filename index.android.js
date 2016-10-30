@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 
 import HomePage from './homePage';
-import MyScene from './MyScene';
-
+import MyMovieList from './MyMovieList';
+import MovieInfo from './MovieInfo';
 
 class AwesomeProject extends React.Component {
 
@@ -32,8 +32,11 @@ class AwesomeProject extends React.Component {
             case "homePage":
                 return <HomePage navigator={navigator}/>
                 break;
-            case "myScene":
-                return <MyScene navigator={navigator}/>
+            case "myMovieList":
+                return <MyMovieList navigator={navigator}/>
+                break;
+            case "movieInfo":
+                return <MovieInfo url={route.url} navigator={navigator}/>
                 break;
             default:
 

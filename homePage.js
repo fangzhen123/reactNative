@@ -42,7 +42,10 @@ export default class homePage extends React.Component {
 
     _renderContent() {
         return Array.from({ length: 30 }).map((_, i) =>
-            <TouchableOpacity key={i}  onPress={()=>ToastAndroid.show('按到我啦~第'+i+'天',ToastAndroid.SHORT)}
+            <TouchableOpacity key={i}  onPress={()=>{
+                console.log(i);
+                ToastAndroid.show('按到我啦~第'+i+'天',ToastAndroid.SHORT)
+            }}
                               onLongPress={()=>ToastAndroid.show('按痛我了~第'+i+'天',ToastAndroid.SHORT)}>
                 <View style={styles.row}>
                     <Text>第{i}天啦</Text>
@@ -137,7 +140,7 @@ export default class homePage extends React.Component {
                         <Animated.View style={[styles.navbarBackground, { opacity: navBarBackgroundOpacity }]} />
 
                         <View style={[StyleSheet.absoluteFill, {flexDirection: 'row', alignItems: 'center'}]}>
-                            <TouchableOpacity onPress={() => { this.props.navigator.push({name:'myScene',sceneConfig: Navigator.SceneConfigs.HorizontalSwipeJump}) }} hitSlop={{top: 15, left: 15, bottom: 15, right: 15}}>
+                            <TouchableOpacity onPress={() => { this.props.navigator.push({name:'myMovieList',sceneConfig: Navigator.SceneConfigs.HorizontalSwipeJump}) }} hitSlop={{top: 15, left: 15, bottom: 15, right: 15}}>
                                 <Image
                                     style={styles.backButton}
                                     source={require('./images/back.png')}
