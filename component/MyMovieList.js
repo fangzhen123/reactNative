@@ -14,6 +14,8 @@ import {
     TouchableOpacity,
     WebView,
     ToastAndroid,
+    ProgressBarAndroid,
+    ActivityIndicator,
 } from 'react-native';
 
 var REQUEST_URL_SEARCH = 'http://api.douban.com/v2/movie/search?q=';
@@ -48,7 +50,13 @@ class SearchComponent extends Component{
                     <TouchableOpacity
                         onPress={
                             ()=>{
-                                this.props.setKeyWord(this.state.inputContent);
+                                if(this.state.inputContent==''){
+                                    ToastAndroid.show('搜索内容不能为空哦',ToastAndroid.SHORT);
+                                }
+                                else {
+                                    this.props.setKeyWord(this.state.inputContent);
+                                }
+
                         }}
                         style={MySceneStyle.searchBtn}
                     >
@@ -105,7 +113,7 @@ export default class MyMovieList extends Component{
     }
 
     fetchData(url) {
-        url += '&count=10&start='+this.state.start;
+        url += '&count=10&start=' + this.state.start;
         console.log(url);
         fetch(url)
             .then((response) => response.json())
@@ -115,11 +123,10 @@ export default class MyMovieList extends Component{
                 this.setState({
                     dataSource: this.state.dataSource.cloneWithRows(newData),
                     loaded: true,
-                    data:newData,
+                    data: newData,
                 });
             });
     }
-
     renderMovies(movies) {
         return (
             <View style={MySceneStyle.container}>
@@ -163,7 +170,7 @@ export default class MyMovieList extends Component{
                     <View style={{flex:1}}>
                         <TouchableOpacity onPress={()=>{this.props.navigator.jumpBack()}}>
                             <View>
-                                <Image style={MySceneStyle.backButton} source={require('./images/back.png')} />
+                                <Image style={MySceneStyle.backButton} source={require('./../images/back.png')} />
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -205,6 +212,10 @@ export default class MyMovieList extends Component{
     renderLoadingView() {
         return (
             <View style={MySceneStyle.container_loading}>
+                <ActivityIndicator
+                    color="#9DE2A1"
+                    size="large"
+                />
                 <Text>
                     电影加载中...
                 </Text>
@@ -266,9 +277,8 @@ const MySceneStyle = StyleSheet.create({
     },
     searchBtn:{
         backgroundColor: '#9DE2A1',
-        padding: 15,
-        borderWidth: StyleSheet.hairlineWidth,
-        margin:5,
+        padding: 12,
+        margin:2,
         borderRadius:5
     },
     searchImage:{

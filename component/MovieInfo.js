@@ -23,7 +23,7 @@ export default class MovieInfo extends Component{
                     <View style={{flex:1}}>
                         <TouchableOpacity onPress={()=>{this.props.navigator.jumpBack()}}>
                             <View>
-                                <Image style={MySceneStyle.backButton} source={require('./images/back.png')} />
+                                <Image style={MySceneStyle.backButton} source={require('./../images/back.png')} />
                             </View>
                         </TouchableOpacity>
                     </View>

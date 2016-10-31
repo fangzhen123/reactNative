@@ -4,11 +4,12 @@ import React ,{ Component} from 'react';
 import {
     AppRegistry,
     Navigator,
+    DrawerLayoutAndroid,//抽屉导航切换
 } from 'react-native';
 
-import HomePage from './homePage';
-import MyMovieList from './MyMovieList';
-import MovieInfo from './MovieInfo';
+import HomePage from './component/HomePage';
+import MyMovieList from './component/MyMovieList';
+import MovieInfo from './component/MovieInfo';
 
 class AwesomeProject extends React.Component {
 

@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 
 import TestAnimated from './TestAnimated';
+import DrawerLayoutComponent from './DrawerLayOutComponent';
 
 
 const PROFILE_WIDTH = 90;
@@ -98,7 +99,9 @@ export default class homePage extends React.Component {
             outputRange: [20, 20,  20,   0,   0],
             extrapolate: 'clamp',
         });
-        return (
+
+        //放在drawerlayout组件中的
+        var showContent = (
             <View style={{flex: 1}}>
                 <View style={{height: Platform.OS === 'android' ? 24 : 26, position: 'absolute', top: 0, left: 0, right:0, backgroundColor: 'black'}} />
                 <View style={[styles.fill, { overflow: 'hidden' }]}>
@@ -143,7 +146,7 @@ export default class homePage extends React.Component {
                             <TouchableOpacity onPress={() => { this.props.navigator.push({name:'myMovieList',sceneConfig: Navigator.SceneConfigs.HorizontalSwipeJump}) }} hitSlop={{top: 15, left: 15, bottom: 15, right: 15}}>
                                 <Image
                                     style={styles.backButton}
-                                    source={require('./images/back.png')}
+                                    source={require('./../images/back.png')}
                                 />
 
                             </TouchableOpacity>
@@ -161,6 +164,12 @@ export default class homePage extends React.Component {
 
                 <StatusBar barStyle="light-content" />
             </View>
+        );
+
+
+
+        return (
+            <DrawerLayoutComponent showContent={showContent}/>
         );
     }
 }
