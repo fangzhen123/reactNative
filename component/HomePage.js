@@ -143,13 +143,6 @@ export default class homePage extends React.Component {
                         <Animated.View style={[styles.navbarBackground, { opacity: navBarBackgroundOpacity }]} />
 
                         <View style={[StyleSheet.absoluteFill, {flexDirection: 'row', alignItems: 'center'}]}>
-                            <TouchableOpacity onPress={() => { this.props.navigator.push({name:'myMovieList',sceneConfig: Navigator.SceneConfigs.HorizontalSwipeJump}) }} hitSlop={{top: 15, left: 15, bottom: 15, right: 15}}>
-                                <Image
-                                    style={styles.backButton}
-                                    source={require('./../images/back.png')}
-                                />
-
-                            </TouchableOpacity>
 
                             <Animated.View pointerEvents="none" style={[styles.titleContainer, {opacity: titleOpacity, transform: [{ translateY: titleTranslate }] }]}>
                                 <Text style={styles.title}>
@@ -169,7 +162,7 @@ export default class homePage extends React.Component {
 
 
         return (
-            <DrawerLayoutComponent showContent={showContent}/>
+            <DrawerLayoutComponent navigator={this.state.navigator} showContent={showContent}/>
         );
     }
 }
